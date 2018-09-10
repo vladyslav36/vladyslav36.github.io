@@ -1,51 +1,85 @@
-var foxDream='https://media.giphy.com/media/uH86GcRl2VQdi/source.gif'
+var foxDream='https://media.giphy.com/media/uH86GcRl2VQdi/source.gif'       
 var foxRun='https://sunveter.ru/uploads/posts/2017-05/1493843677_fox18.gif'
-var xMax=window.innerWidth, yMax=window.innerHeight
-var arrWayX=[],arrWayY=[]
-var step=7
-var x0=5
-var y0=yMax-150
+var xMax=window.innerWidth-120, yMax=window.innerHeight-120
+var arrColob=[]
+var fox={}
+fox.x0=5
+fox.y0=yMax-30
+fox.step=10
+//var id=0
+var stepColob=2
 document.body.style.backgroundColor='#264d00'
-var elem3=document.createElement('img')
-elem3.src=foxDream
-elem3.style.width='120px'
-elem3.style.position='fixed'
-elem3.style.top=y0+'px'
-elem3.style.left=x0+'px'
-document.body.appendChild(elem3)
-var clearTimer=setInterval(putMan,100)
+fox.elem=document.createElement('img')
+fox.elem.src=foxDream       
+fox.elem.style.width='120px'       
+fox.elem.style.position='fixed'
+fox.elem.style.top=fox.y0+'px'
+fox.elem.style.left=fox.x0+'px'
+document.body.appendChild(fox.elem)
+var clearTimer=setInterval(foxWay,100)
 window.onclick=function(ev){
-        if (ev.clientX>xMax-120||ev.clientY>yMax-120) return
-        elem3.src=foxRun
-        var elem=document.createElement('img')
+        if (ev.clientX>xMax||ev.clientY>yMax) return
+        fox.elem.src=foxRun        
+        createColobok(ev.clientX,ev.clientY)        
+}
+function createColobok(x,y){
+     var elem=document.createElement('img')
         document.body.appendChild(elem)
         elem.src='http://tainam.net/wp-content/uploads/2018/02/Smile-big-1.gif'
         elem.style.position='fixed'
         elem.style.width='50px'
-        arrWayX.push(ev.clientX)
-        arrWayY.push(ev.clientY)
-        elem.id='point'
-        elem.style.left=ev.clientX+'px'
-        elem.style.top=ev.clientY+'px'
+        elem.style.left=x+'px'
+        elem.style.top=y+'px'
+        arrColob.push({X:x,Y:y,elem:elem})       
 }
-function putMan(){
-    var deltaX=arrWayX[0]-x0, deltaY=arrWayY[0]-y0
-    if (!deltaX&&!deltaY) return
-    var l=Math.round(Math.sqrt(deltaX*deltaX+deltaY*deltaY))
-    var cosX=deltaX/l,cosY=deltaY/l
-    var stepX=Math.round(step*cosX), stepY=Math.round(step*cosY)
-    if (stepX<0)elem3.style.transform='rotateY(0deg)'
-    else elem3.style.transform='rotateY(180deg)'
-    if (l<=step){
-        arrWayX.shift()
-        arrWayY.shift()
-        var el2=document.getElementById('point')
-        document.body.removeChild(el2)
-        if (typeof(arrWayX[0])==='undefined') elem3.src=foxDream
-       else elem3.src=foxRun
+function foxWay(){
+    arrColob.forEach(function(x,ind,arr){
+        if (x.X>xMax||x.X<0||x.Y>yMax||x.Y<0){
+            arr.splice(ind,1)
+            x.elem.style.transition='all 1s'
+            x.elem.style.opacity='0'    
+            setTimeout(removeElem,1000)
+            function removeElem(){                
+                document.body.removeChild(x.elem)
+            }
+        }
+    })       
+    if (typeof(arrColob[0])==='undefined') {
+            fox.elem.src=foxDream
+            return}
+    arrColob.forEach(function(x,ind,arr){        
+        var arrLen=getLen(x.X,x.Y,fox.x0,fox.y0)
+        x.len=arrLen[0];x.cosX=arrLen[1];x.cosY=arrLen[2]
+        posColob(x)        
+        if (arr[0].len>x.len){
+            arr.push(x);arr[ind]=arr[0];arr[0]=arr.pop()
+        }       
+    })
+    var arrLen=getLen(arrColob[0].X,arrColob[0].Y,fox.x0,fox.y0)
+    var l=arrLen[0],cosX=arrLen[1],cosY=arrLen[2]   
+    var stepX=Math.round(fox.step*cosX), stepY=Math.round(fox.step*cosY)
+    if (stepX<0)fox.elem.style.transform='rotateY(0deg)'
+    else fox.elem.style.transform='rotateY(180deg)'
+    if (l<=fox.step){                
+         document.body.removeChild(arrColob[0].elem)   
+         arrColob.shift()           
     }
-    x0+=stepX
-    y0+=stepY
-    elem3.style.top=y0+'px'
-    elem3.style.left=x0+'px'
+    fox.x0+=stepX
+    fox.y0+=stepY
+    fox.elem.style.top=fox.y0+'px'
+    fox.elem.style.left=fox.x0+'px'    
+}
+function getLen(x1,y1,x0,y0){
+    var deltaX=x1-x0
+    var deltaY=y1-y0             
+    var  l=Math.round(Math.sqrt(deltaX*deltaX+deltaY*deltaY))               
+    var cosX=deltaX/l,cosY=deltaY/l
+    return [l,cosX,cosY]
+}
+function posColob(x){
+    var stepX=Math.round(stepColob*x.cosX), stepY=Math.round(stepColob*x.cosY)   
+        x.X+=stepX
+        x.Y+=stepY
+        x.elem.style.top=x.Y+'px'
+        x.elem.style.left=x.X+'px'    
 }
