@@ -77,6 +77,7 @@ function getLen(x1,y1,x0,y0){
     return [l,cosX,cosY]
 }
 function posColob(x){
+    var stepColob=(x.len<100)?5.5:(x.len<200)?3:(x.len<300)?2:(x.len<400)?1:(x.len<500)?0.5:0
     var stepX=Math.round(stepColob*x.cosX), stepY=Math.round(stepColob*x.cosY)   
         x.X+=stepX
         x.Y+=stepY
