@@ -1,0 +1,11 @@
+#foxElem {
+    width: 120px;
+    position: fixed;
+}
+.kolElem {
+    width: 50px;
+    position: fixed;
+}
+body {
+    background-color: #264d00;
+}

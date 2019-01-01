@@ -1,86 +1,91 @@
-var foxDream='https://media.giphy.com/media/uH86GcRl2VQdi/source.gif'       
-var foxRun='https://sunveter.ru/uploads/posts/2017-05/1493843677_fox18.gif'
-var xMax=window.innerWidth-120, yMax=window.innerHeight-120
-var arrColob=[]
-var fox={}
-fox.x0=5
-fox.y0=yMax-30
-fox.step=10
-//var id=0
-var stepColob=2
-document.body.style.backgroundColor='#264d00'
-fox.elem=document.createElement('img')
-fox.elem.src=foxDream       
-fox.elem.style.width='120px'       
-fox.elem.style.position='fixed'
-fox.elem.style.top=fox.y0+'px'
-fox.elem.style.left=fox.x0+'px'
-document.body.appendChild(fox.elem)
-var clearTimer=setInterval(foxWay,100)
-window.onclick=function(ev){
-        if (ev.clientX>xMax||ev.clientY>yMax) return
-        fox.elem.src=foxRun        
-        createColobok(ev.clientX,ev.clientY)        
+var fox = {
+    foxDream: 'https://media.giphy.com/media/uH86GcRl2VQdi/source.gif',
+    foxRun: 'https://sunveter.ru/uploads/posts/2017-05/1493843677_fox18.gif',
+    x: 0,
+    y: 0,
+    cosX: 0,
+    cosY: 0,
+    step: 10
+};
+var kol = [];
+var xMax = window.innerWidth - 120, yMax = window.innerHeight - 120;
+fox.x = 10;
+fox.y = yMax - 30;
+showFox(fox, kol);
+window.onclick = function (ev) {
+    if (ev.clientX > xMax || ev.clientY > yMax) return;
+    createCol(ev.clientX, ev.clientY, fox.x, fox.y);
+    showFox(fox, kol)
+};
+setInterval(() => showFox(fox, kol), 100);
+
+function createCol(x, y, xFox, yFox) {
+    var img = document.createElement('img');
+    document.body.appendChild(img);
+    img.src = 'http://tainam.net/wp-content/uploads/2018/02/Smile-big-1.gif';
+    img.className = 'kolElem';
+    kol.push({x: x, y: y, l: findLen(x, y, xFox, yFox), elem: img});
+    showElem(x, y, img)
 }
-function createColobok(x,y){
-     var elem=document.createElement('img')
-        document.body.appendChild(elem)
-        elem.src='http://tainam.net/wp-content/uploads/2018/02/Smile-big-1.gif'
-        elem.style.position='fixed'
-        elem.style.width='50px'
-        elem.style.left=x+'px'
-        elem.style.top=y+'px'
-        arrColob.push({X:x,Y:y,elem:elem})       
+
+function showElem(x, y, elem) {
+    elem.style.left = x + 'px';
+    elem.style.top = y + 'px'
 }
-function foxWay(){
-    arrColob.forEach(function(x,ind,arr){
-        if (x.X>xMax||x.X<0||x.Y>yMax||x.Y<0){
-            arr.splice(ind,1)
-            x.elem.style.transition='all 1s'
-            x.elem.style.opacity='0'    
-            setTimeout(removeElem,1000)
-            function removeElem(){                
-                document.body.removeChild(x.elem)
-            }
+
+function findLen(x1, y1, x2, y2) {
+    return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
+}
+
+function showFox(fox, kol) {
+    if (!kol[0]) {
+        foxElem.src = fox.foxDream;
+        showElem(fox.x, fox.y, foxElem);
+        return
+    } else {
+        if (foxElem.src !== fox.foxRun) {
+            foxElem.src = fox.foxRun
         }
-    })       
-    if (typeof(arrColob[0])==='undefined') {
-            fox.elem.src=foxDream
-            return}
-    arrColob.forEach(function(x,ind,arr){        
-        var arrLen=getLen(x.X,x.Y,fox.x0,fox.y0)
-        x.len=arrLen[0];x.cosX=arrLen[1];x.cosY=arrLen[2]
-        posColob(x)        
-        if (arr[0].len>x.len){
-            arr.push(x);arr[ind]=arr[0];arr[0]=arr.pop()
-        }       
-    })
-    var arrLen=getLen(arrColob[0].X,arrColob[0].Y,fox.x0,fox.y0)
-    var l=arrLen[0],cosX=arrLen[1],cosY=arrLen[2]   
-    var stepX=Math.round(fox.step*cosX), stepY=Math.round(fox.step*cosY)
-    if (stepX<0)fox.elem.style.transform='rotateY(0deg)'
-    else fox.elem.style.transform='rotateY(180deg)'
-    if (l<=fox.step){                
-         document.body.removeChild(arrColob[0].elem)   
-         arrColob.shift()           
     }
-    fox.x0+=stepX
-    fox.y0+=stepY
-    fox.elem.style.top=fox.y0+'px'
-    fox.elem.style.left=fox.x0+'px'    
+    if (kol[0].l < fox.step) {
+        deleteKol(kol);
+        return
+    }
+    kol.sort((a, b) => (a.l > b.l) ? 1 : -1);
+    fox.cosX = (kol[0].x - fox.x) / kol[0].l;
+    fox.cosY = (kol[0].y - fox.y) / kol[0].l;
+    fox.x += Math.round(fox.step * fox.cosX);
+    fox.y += Math.round(fox.step * fox.cosY);
+    kol.forEach(a => {
+        a.l = findLen(a.x, a.y, fox.x, fox.y);
+        a.cosX = (a.x - fox.x) / a.l;
+        a.cosY = (a.y - fox.y) / a.l
+    });
+    goKol(fox, kol);
+    foxElem.style.transform = fox.cosX > 0 ? ('rotateY(180deg)') : ('rotateY(0deg)');
+    showElem(fox.x, fox.y, foxElem)
+
 }
-function getLen(x1,y1,x0,y0){
-    var deltaX=x1-x0
-    var deltaY=y1-y0             
-    var  l=Math.round(Math.sqrt(deltaX*deltaX+deltaY*deltaY))               
-    var cosX=deltaX/l,cosY=deltaY/l
-    return [l,cosX,cosY]
+
+function deleteKol(kol) {
+    document.body.removeChild(kol[0].elem);
+    kol.shift()
 }
-function posColob(x){
-    var stepColob=(x.len<100)?5.5:(x.len<200)?3:(x.len<300)?2:(x.len<400)?1:(x.len<500)?0.5:0
-    var stepX=Math.round(stepColob*x.cosX), stepY=Math.round(stepColob*x.cosY)   
-        x.X+=stepX
-        x.Y+=stepY
-        x.elem.style.top=x.Y+'px'
-        x.elem.style.left=x.X+'px'    
+
+function goKol(fox, kol) {
+    kol.forEach((a, i, arr) => {
+        a.step = (a.l < 50) ? 8 : (a.l < 100) ? 6 : (a.l < 200) ? 3 : (a.l < 300) ? 2 :
+            (a.l < 400) ? 1 : (a.l < 500) ? 0.5 : 0;
+        a.x += a.step * a.cosX;
+        a.y += a.step * a.cosY;
+        if (a.x < 0 || a.x > xMax || a.y < 0 || a.y > yMax) {
+            a.elem.style.transition = 'all 1s';
+            a.elem.style.opacity = '0';
+            setTimeout(() => document.body.removeChild(a.elem), 1000);
+            console.log(a);
+            arr.splice(i, 1)
+        }
+        showElem(a.x, a.y, a.elem)
+    })
 }
+
