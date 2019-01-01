@@ -20,12 +20,12 @@ window.onclick = function (ev) {
 setInterval(() => showFox(fox, kol), 100);
 
 function createCol(x, y, xFox, yFox) {
-    var img = document.createElement('img');
-    document.body.appendChild(img);
+    var elImg = document.createElement('img');
+    document.body.appendChild(elImg);
     img.src = 'http://tainam.net/wp-content/uploads/2018/02/Smile-big-1.gif';
     img.className = 'kolElem';
-    kol.push({x: x, y: y, l: findLen(x, y, xFox, yFox), elem: img});
-    showElem(x, y, img)
+    kol.push({x: x, y: y, l: findLen(x, y, xFox, yFox), elem: elImg});
+    showElem(x, y, elImg)
 }
 
 function showElem(x, y, elem) {
