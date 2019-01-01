@@ -17,15 +17,15 @@ window.onclick = function (ev) {
     createCol(ev.clientX, ev.clientY, fox.x, fox.y);
     showFox(fox, kol)
 };
-setInterval(() => showFox(fox, kol), 100);
+setInterval( showFox, 100,fox,kol);
 
 function createCol(x, y, xFox, yFox) {
-    var elImg = document.createElement('img');
-    document.body.appendChild(elImg);
-    elImg.src = 'http://tainam.net/wp-content/uploads/2018/02/Smile-big-1.gif';
-    elImg.className = 'kolElem';
-    kol.push({x: x, y: y, l: findLen(x, y, xFox, yFox), elem: elImg});
-    showElem(x, y, elImg)
+    var el = document.createElement('img');
+    document.body.appendChild(el);
+    el.src = 'http://tainam.net/wp-content/uploads/2018/02/Smile-big-1.gif';
+    el.className = 'kolElem';
+    kol.push({x: x, y: y, l: findLen(x, y, xFox, yFox), elem: el});
+    showElem(x, y, el)
 }
 
 function showElem(x, y, elem) {
@@ -39,7 +39,9 @@ function findLen(x1, y1, x2, y2) {
 
 function showFox(fox, kol) {
     if (!kol[0]) {
-        foxElem.src = fox.foxDream;
+        if (foxElem.src!== fox.foxDream){
+            foxElem.src= fox.foxDream
+        };
         showElem(fox.x, fox.y, foxElem);
         return
     } else {
