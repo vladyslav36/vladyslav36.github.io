@@ -22,8 +22,8 @@ setInterval(() => showFox(fox, kol), 100);
 function createCol(x, y, xFox, yFox) {
     var elImg = document.createElement('img');
     document.body.appendChild(elImg);
-    img.src = 'http://tainam.net/wp-content/uploads/2018/02/Smile-big-1.gif';
-    img.className = 'kolElem';
+    elImg.src = 'http://tainam.net/wp-content/uploads/2018/02/Smile-big-1.gif';
+    elImg.className = 'kolElem';
     kol.push({x: x, y: y, l: findLen(x, y, xFox, yFox), elem: elImg});
     showElem(x, y, elImg)
 }
